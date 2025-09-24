@@ -474,9 +474,9 @@ class AnalysisService {
       }
       const summary = parsed.ok ? parsed.data : this.getDefaultSummary();
       
-      // Ensure content is under 250 words
-      if (summary.content && summary.content.split(' ').length > 250) {
-        summary.content = summary.content.split(' ').slice(0, 250).join(' ');
+      // Ensure content is under 250 characters (matches mongoose schema)
+      if (summary.content && summary.content.length > 250) {
+        summary.content = summary.content.slice(0, 250);
       }
 
       return summary;
@@ -494,13 +494,20 @@ class AnalysisService {
    */
   async detectMechanisms(narrativeLoop, spiessMap) {
     const tags = [];
+    const allowedTags = [
+      'fear_of_rejection',
+      'autonomy_threat',
+      'perfectionism',
+      'people_pleasing',
+      'boundary_signaling',
+      'attention_testing',
+      'vulnerability_avoidance'
+    ];
     
     // Check for specific mechanisms
     const text = `${JSON.stringify(narrativeLoop)} ${JSON.stringify(spiessMap)}`.toLowerCase();
     
-    if (text.includes('confirmation bias') || text.includes('confirmation_bias')) {
-      tags.push('confirmation_bias');
-    }
+    // Note: Do not add a tag for confirmation bias; it is represented in SPIESS, not tags
     
     if (text.includes('rejection') || text.includes('rejection_sensitivity')) {
       tags.push('fear_of_rejection');
@@ -530,7 +537,7 @@ class AnalysisService {
       tags.push('vulnerability_avoidance');
     }
     
-    return [...new Set(tags)]; // Remove duplicates
+    return [...new Set(tags)].filter(t => allowedTags.includes(t)); // Remove duplicates and enforce enum
   }
 
   /**
