@@ -1,0 +1,458 @@
+{
+  "info": {
+    "name": "Clarify API Collection",
+    "description": "Complete API collection for Clarify mental health analysis backend",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "sessionId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Basic Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Detailed Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health/detailed",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "detailed"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Analysis Endpoints",
+      "item": [
+        {
+          "name": "Analyze Input - Social Exclusion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"I was at a party last night and everyone was talking in groups, but I was standing alone. I felt like they were all avoiding me and I started to think that maybe they don't actually like me. I ended up leaving early because I felt so uncomfortable and now I'm wondering if I should just stop trying to make friends.\",\n  \"storageOptIn\": true,\n  \"redactNames\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "analyze"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Analyze Input - Work Criticism",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"My boss called me into his office today and told me that my presentation yesterday was 'not up to standard' and that I need to 'step up my game'. I felt like a complete failure and now I'm worried that I'm going to get fired. I can't stop thinking about what I did wrong and I'm afraid to ask for clarification because I don't want to look stupid.\",\n  \"storageOptIn\": true,\n  \"redactNames\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "analyze"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Analyze Input - Crisis Detection",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"I want to kill myself. I can't take this anymore. There's no point in living.\",\n  \"storageOptIn\": true,\n  \"redactNames\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "analyze"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Analyze Input - Incomplete (Triggers Questions)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"I had a bad day at work.\",\n  \"storageOptIn\": true,\n  \"redactNames\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "analyze"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Process Answers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sessionId\": \"{{sessionId}}\",\n  \"answers\": [\n    \"I felt excluded because everyone was in groups and I was alone\",\n    \"I'm afraid they don't actually like me and are just being polite\",\n    \"I felt sad and embarrassed, like I was invisible\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/answers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "answers"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Session Management",
+      "item": [
+        {
+          "name": "Get Session by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/session/{{sessionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "session", "{{sessionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Session by ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/session/{{sessionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "session", "{{sessionId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Feedback",
+      "item": [
+        {
+          "name": "Submit Feedback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sessionId\": \"{{sessionId}}\",\n  \"rating\": 4,\n  \"helpful\": true,\n  \"comments\": \"Very helpful analysis, gave me new insights into my situation\",\n  \"categories\": [\"accuracy\", \"usefulness\", \"clarity\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/feedback",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "feedback"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Error Handling Tests",
+      "item": [
+        {
+          "name": "Invalid Input - Empty",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": \"\",\n  \"storageOptIn\": true,\n  \"redactNames\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "analyze"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Session ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/session/invalid-session-id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "session", "invalid-session-id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Feedback Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sessionId\": \"test-session\",\n  \"rating\": 6,\n  \"helpful\": \"yes\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/feedback",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "feedback"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sample Flows",
+      "item": [
+        {
+          "name": "Complete Analysis Flow",
+          "item": [
+            {
+              "name": "1. Analyze Input",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"input\": \"I'm constantly worried about what my colleagues think of me. Every time I speak in meetings, I replay the conversation in my head and find things I should have said differently. I feel like I'm always being judged and I can't relax around them. I've started avoiding social situations at work because I'm afraid of saying something wrong.\",\n  \"storageOptIn\": true,\n  \"redactNames\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/analyze",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "analyze"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "2. Get Session Details",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/session/{{sessionId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "session", "{{sessionId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "3. Submit Feedback",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sessionId\": \"{{sessionId}}\",\n  \"rating\": 5,\n  \"helpful\": true,\n  \"comments\": \"This analysis really helped me understand my patterns and gave me actionable steps to work on my social anxiety.\",\n  \"categories\": [\"accuracy\", \"usefulness\", \"clarity\"]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/feedback",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "feedback"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "4. Delete Session",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/session/{{sessionId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "session", "{{sessionId}}"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Clarifying Questions Flow",
+          "item": [
+            {
+              "name": "1. Analyze Incomplete Input",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"input\": \"I had a difficult conversation with my partner.\",\n  \"storageOptIn\": true,\n  \"redactNames\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/analyze",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "analyze"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "2. Process Answers",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sessionId\": \"{{sessionId}}\",\n  \"answers\": [\n    \"We were discussing our future plans and I felt like they weren't taking my concerns seriously\",\n    \"I'm afraid they don't really understand me and we're growing apart\",\n    \"I felt frustrated and unheard, like my opinion doesn't matter\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/answers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "answers"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Crisis Detection Flow",
+          "item": [
+            {
+              "name": "1. Analyze Crisis Content",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"input\": \"I've been thinking about ending it all. Nothing seems to matter anymore and I feel like everyone would be better off without me.\",\n  \"storageOptIn\": true,\n  \"redactNames\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/analyze",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "analyze"]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-extract sessionId from analyze responses",
+          "if (pm.response && pm.response.json() && pm.response.json().sessionId) {",
+          "    pm.collectionVariables.set('sessionId', pm.response.json().sessionId);",
+          "}"
+        ]
+      }
+    }
+  ]
+}

@@ -8,8 +8,9 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
 const connectDB = require('./config/db');
-const appRouter = require('./routes/authRoutes');
+const appRouter = require('./routes/index');
 const requestLogger = require('./middleware/requestLogger');
+const cleanupService = require('./services/cleanupService');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -41,6 +42,39 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
 app.use(requestLogger);
 
 app.get('/', (req, res) => res.send('✅ Server is running'));
+
+// Health check endpoints
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        memory: process.memoryUsage(),
+        version: process.env.npm_package_version || '1.0.0'
+    });
+});
+
+app.get('/health/detailed', async (req, res) => {
+    try {
+        const cleanupStats = await cleanupService.getCleanupStats();
+        res.json({
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            memory: process.memoryUsage(),
+            version: process.env.npm_package_version || '1.0.0',
+            database: 'connected',
+            cleanupStats
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'unhealthy',
+            timestamp: new Date().toISOString(),
+            error: error.message
+        });
+    }
+});
+
 app.use('/api', appRouter);
 
 app.use((req, res) => res.status(404).json({
@@ -58,4 +92,8 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
+    
+    // Start cleanup service
+    cleanupService.start();
+    console.log('🧹 Cleanup service started');
 });
