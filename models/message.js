@@ -2,10 +2,11 @@ const mongoose = require("mongoose");
 
 const messageSchema = new mongoose.Schema(
     {
-        sectionId: {
+        sessionId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Section",
+            ref: "Session",
             required: true,
+            index: true,
         },
         sender: {
             type: String,
@@ -19,5 +20,8 @@ const messageSchema = new mongoose.Schema(
     },
     {timestamps: true}
 );
+
+// Index for query performance
+messageSchema.index({ sessionId: 1, createdAt: 1 });
 
 module.exports = mongoose.model("Message", messageSchema);

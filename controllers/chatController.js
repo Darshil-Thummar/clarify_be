@@ -3,7 +3,8 @@ const Session = require('../models/session');
 const Feedback = require('../models/feedback');
 const AnalyticsService = require('../services/analyticsService');
 const SchemaValidationMiddleware = require('../middleware/schemaValidation');
-const { v4: uuidv4 } = require('uuid');
+const mongoose = require('mongoose');
+const Message = require('../models/message');
 
 /**
  * Analyze user input and generate narrative loop, SPIESS map, and summary
@@ -58,6 +59,28 @@ const analyze = async (req, res) => {
             }
         }
 
+        // Store messages: user's input and assistant's questions
+        try {
+            await Message.create({
+                sessionId: result.sessionId,
+                sender: 'human',
+                message: input
+            });
+
+            const questions = Array.isArray(result.questions) ? result.questions : [];
+            if (questions.length > 0) {
+                const assistantContent = questions.map((q, i) => `Q${i + 1}: ${q}`).join('\n');
+                await Message.create({
+                    sessionId: result.sessionId,
+                    sender: 'openai',
+                    message: assistantContent
+                });
+            }
+        } catch (error) {
+            console.error('Error storing analyze messages:', error);
+            // Continue without failing the request
+        }
+
         return res.json(result);
 
     } catch (error) {
@@ -82,12 +105,12 @@ const processAnswers = async (req, res) => {
         const { sessionId, answers } = req.body;
         const userId = req.user ? req.user._id : null;
 
-        if (!sessionId || !Array.isArray(answers)) {
+        if (!sessionId || !Array.isArray(answers) || !mongoose.Types.ObjectId.isValid(sessionId)) {
             return res.status(400).json({
                 success: false,
                 error: {
                     code: 'VALIDATION_ERROR',
-                    message: 'Session ID and answers array are required',
+                    message: 'Valid MongoDB Session ID and answers array are required',
                     timestamp: new Date().toISOString()
                 }
             });
@@ -117,6 +140,29 @@ const processAnswers = async (req, res) => {
             // Continue without failing the request
         }
 
+        // Store messages: user's answers and assistant's response
+        try {
+            await Message.create({
+                sessionId,
+                sender: 'human',
+                message: Array.isArray(answers) ? answers.map((a, i) => `A${i + 1}: ${a}`).join('\n') : String(answers)
+            });
+
+            const assistantPayload = {
+                narrativeLoop: result.narrativeLoop,
+                spiessMap: result.spiessMap,
+                summary: result.summary
+            };
+            await Message.create({
+                sessionId,
+                sender: 'openai',
+                message: JSON.stringify(assistantPayload)
+            });
+        } catch (error) {
+            console.error('Error storing answers messages:', error);
+            // Continue without failing the request
+        }
+
         return res.json(result);
 
     } catch (error) {
@@ -141,12 +187,12 @@ const getSession = async (req, res) => {
         const { id } = req.params;
         const userId = req.user ? req.user._id : null;
 
-        if (!id) {
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 success: false,
                 error: {
                     code: 'VALIDATION_ERROR',
-                    message: 'Session ID is required',
+                    message: 'Valid MongoDB Session ID is required',
                     timestamp: new Date().toISOString()
                 }
             });
@@ -222,12 +268,12 @@ const deleteSession = async (req, res) => {
         const { id } = req.params;
         const userId = req.user ? req.user._id : null;
 
-        if (!id) {
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 success: false,
                 error: {
                     code: 'VALIDATION_ERROR',
-                    message: 'Session ID is required',
+                    message: 'Valid MongoDB Session ID is required',
                     timestamp: new Date().toISOString()
                 }
             });

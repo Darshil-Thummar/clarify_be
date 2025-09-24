@@ -1,5 +1,5 @@
 const OpenAI = require('openai');
-const { v4: uuidv4 } = require('uuid');
+const mongoose = require('mongoose');
 const SafetyUtils = require('../utils/safety');
 const AnalyticsService = require('./analyticsService');
 const { 
@@ -93,7 +93,7 @@ class AnalysisService {
    * @returns {Object} - Analysis result
    */
   async analyze(input, options = {}, req = null) {
-    const sessionId = uuidv4();
+    const sessionId = new mongoose.Types.ObjectId();
     const startTime = Date.now();
     
     try {
@@ -152,11 +152,11 @@ class AnalysisService {
       const result = await this.processStages(validation.processedInput, sessionId, options, req);
       
       const processingTime = Date.now() - startTime;
-      console.log(`Analysis completed in ${processingTime}ms for session ${sessionId}`);
+      console.log(`Analysis completed in ${processingTime}ms for session ${sessionId.toString()}`);
       
       return {
         success: true,
-        sessionId,
+          sessionId: sessionId.toString(),
         ...result,
         processingTime
       };
@@ -167,7 +167,7 @@ class AnalysisService {
       
       return {
         success: false,
-        sessionId,
+        sessionId: sessionId.toString(),
         error: {
           code: 'AI_PROCESSING_ERROR',
           message: 'Analysis failed due to processing error',
@@ -577,7 +577,10 @@ class AnalysisService {
       toolAction: {
         protocol: sanitizeString(sp?.toolAction?.protocol),
         steps: sanitizeArray(sp?.toolAction?.steps),
-        example: sanitizeString(sp?.toolAction?.example)
+        example: (() => {
+          const ex = sanitizeString(sp?.toolAction?.example);
+          return ex.length > 0 ? ex : 'Example not provided';
+        })()
       }
     };
   }

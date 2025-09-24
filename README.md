@@ -92,7 +92,7 @@ Analyze user input and generate narrative loop, SPIESS map, and summary.
 ```json
 {
   "success": true,
-  "sessionId": "uuid",
+  "sessionId": "objectId",
   "narrativeLoop": {
     "trigger": "What started this situation",
     "fear": "What they're afraid of",
@@ -135,7 +135,7 @@ Process answers to clarifying questions.
 **Request Body:**
 ```json
 {
-  "sessionId": "uuid",
+  "sessionId": "objectId",
   "answers": ["Answer 1", "Answer 2", "Answer 3"]
 }
 ```
@@ -150,7 +150,7 @@ Retrieve session by ID.
 {
   "success": true,
   "session": {
-    "sessionId": "uuid",
+    "sessionId": "objectId",
     "status": "completed",
     "createdAt": "2024-01-01T00:00:00.000Z",
     "updatedAt": "2024-01-01T00:00:00.000Z",
@@ -184,7 +184,7 @@ Submit feedback for a session.
 **Request Body:**
 ```json
 {
-  "sessionId": "uuid",
+  "sessionId": "objectId",
   "rating": 4,
   "helpful": true,
   "comments": "Very helpful analysis",

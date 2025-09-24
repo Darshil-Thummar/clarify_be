@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const sessionSchema = new mongoose.Schema(
     {
-        sessionId: {type: String, required: true, unique: true},
+        sessionId: {type: mongoose.Schema.Types.ObjectId, required: true, unique: true, ref: "Session"},
         userId: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: false},
         status: {type: String, enum: ['active', 'completed', 'deleted'], default: 'active'},
         input: {type: String, maxlength: 10000},

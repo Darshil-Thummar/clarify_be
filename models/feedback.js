@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const feedbackSchema = new mongoose.Schema(
     {
-        sessionId: {type: String, required: true},
+        sessionId: {type: mongoose.Schema.Types.ObjectId, ref: "Session", required: true},
         rating: {type: Number, required: true, min: 1, max: 5},
         helpful: {type: Boolean, required: true},
         comments: {type: String, maxlength: 1000},

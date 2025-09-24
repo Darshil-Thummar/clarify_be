@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 const sessionSchema = Joi.object({
-  id: Joi.string().uuid().required(),
+  id: Joi.string().pattern(/^[a-fA-F0-9]{24}$/).required(),
   userId: Joi.string().optional(),
   status: Joi.string().valid('active', 'completed', 'deleted').required(),
   createdAt: Joi.date().iso().required(),
@@ -29,7 +29,7 @@ const sessionSchema = Joi.object({
 });
 
 const sessionRepairSchema = Joi.object({
-  id: Joi.string().uuid(),
+  id: Joi.string().pattern(/^[a-fA-F0-9]{24}$/),
   userId: Joi.string().allow(''),
   status: Joi.string().valid('active', 'completed', 'deleted'),
   createdAt: Joi.date().iso(),

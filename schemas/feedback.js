@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 const feedbackSchema = Joi.object({
-  sessionId: Joi.string().uuid().required(),
+  sessionId: Joi.string().pattern(/^[a-fA-F0-9]{24}$/).required(),
   rating: Joi.number().integer().min(1).max(5).required(),
   helpful: Joi.boolean().required(),
   comments: Joi.string().max(1000).optional(),

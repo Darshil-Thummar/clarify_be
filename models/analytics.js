@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const analyticsSchema = new mongoose.Schema(
     {
-        sessionId: {type: String, required: true},
+        sessionId: {type: mongoose.Schema.Types.ObjectId, ref: "Session", required: true},
         userId: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: false},
         eventName: {type: String, required: true, enum: [
             'session_started',
