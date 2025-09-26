@@ -1,7 +1,8 @@
 const express = require('express');
 const { 
     analyze, 
-    processAnswers, 
+    processAnswers,
+    getAllSession,
     getSession, 
     deleteSession, 
     submitFeedback 
@@ -15,6 +16,9 @@ router.post('/analyze', analyze);
 
 // POST /v1/answers - Process answers to clarifying questions
 router.post('/answers', processAnswers);
+
+// GET /v1/sessions - Get all sessions for current user
+router.get('/session', authMiddleware, getAllSession);
 
 // GET /v1/session/:id - Get session by ID
 router.get('/session/:id', getSession);

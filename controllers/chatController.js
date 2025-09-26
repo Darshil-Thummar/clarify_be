@@ -12,8 +12,8 @@ const Message = require('../models/message');
  */
 const analyze = async (req, res) => {
     try {
-        const { input, storageOptIn = false, redactNames = true } = req.body;
-        const userId = req.user ? req.user._id : null;
+        const {input, storageOptIn = false, redactNames = true, user} = req.body;
+        const userId = user ? user : null;
 
         if (!input || typeof input !== 'string') {
             return res.status(400).json({
@@ -172,6 +172,60 @@ const processAnswers = async (req, res) => {
             error: {
                 code: 'INTERNAL_SERVER_ERROR',
                 message: 'Answer processing failed due to server error',
+                timestamp: new Date().toISOString()
+            }
+        });
+    }
+};
+
+/**
+ * Get all sessions for the current user
+ * GET /v1/sessions
+ */
+const getAllSession = async (req, res) => {
+    try {
+        const userId = req.user ? req.user._id : null;
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                error: {
+                    code: 'UNAUTHORIZED',
+                    message: 'User not authenticated',
+                    timestamp: new Date().toISOString()
+                }
+            });
+        }
+
+        const sessions = await Session.find({
+            userId: userId,
+            status: {$ne: 'deleted'}
+        }).sort({createdAt: -1});
+
+        return res.json({
+            success: true,
+            count: sessions.length,
+            sessions: sessions.map(session => ({
+                sessionId: session._id,
+                status: session.status,
+                createdAt: session.createdAt,
+                updatedAt: session.updatedAt,
+                input: session.storageOptIn ? session.input : null,
+                clarifyingQuestions: session.clarifyingQuestions,
+                narrativeLoop: session.narrativeLoop,
+                spiessMap: session.spiessMap,
+                summary: session.summary,
+                tags: session.tags
+            }))
+        });
+
+    } catch (error) {
+        console.error('Get all sessions error:', error);
+        return res.status(500).json({
+            success: false,
+            error: {
+                code: 'INTERNAL_SERVER_ERROR',
+                message: 'Failed to retrieve sessions',
                 timestamp: new Date().toISOString()
             }
         });
@@ -410,6 +464,7 @@ const submitFeedback = async (req, res) => {
 module.exports = {
     analyze,
     processAnswers,
+    getAllSession,
     getSession,
     deleteSession,
     submitFeedback
