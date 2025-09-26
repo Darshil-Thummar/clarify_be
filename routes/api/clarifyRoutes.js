@@ -11,7 +11,6 @@ const authMiddleware = require('../../middleware/authMiddleware');
 
 const router = express.Router();
 
-
 // POST /v1/analyze - Analyze user input
 router.post('/analyze', analyze);
 
