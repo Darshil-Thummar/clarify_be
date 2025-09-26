@@ -206,7 +206,7 @@ const getAllSession = async (req, res) => {
             success: true,
             count: sessions.length,
             sessions: sessions.map(session => ({
-                sessionId: session._id,
+                sessionId: session.sessionId,
                 status: session.status,
                 createdAt: session.createdAt,
                 updatedAt: session.updatedAt,
@@ -268,19 +268,6 @@ const getSession = async (req, res) => {
             });
         }
 
-        // Check if user has access to this session
-        if (session.userId && session.userId.toString() !== userId?.toString()) {
-            return res.status(403).json({
-                success: false,
-                error: {
-                    code: 'INVALID_SESSION',
-                    message: 'Access denied to this session',
-                    timestamp: new Date().toISOString()
-                }
-            });
-        }
-
-        // Get analytics summary
         const analytics = await AnalyticsService.getSessionSummary(id);
 
         return res.json({
